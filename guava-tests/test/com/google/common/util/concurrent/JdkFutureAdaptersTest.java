@@ -124,13 +124,14 @@ public class JdkFutureAdaptersTest extends TestCase {
     assertTrue(listenableFuture.isDone());
   }
 
+  //  The task must be started by the executor promptly, or else the returned ListenableFuture may fail to work.
   public void testListenInPoolThreadCustomExecutorInterrupted() throws Exception {
     final CountDownLatch submitSuccessful = new CountDownLatch(1);
     ExecutorService executorService =
         new ThreadPoolExecutor(
-            0,
+            0, // corePoolsize
             Integer.MAX_VALUE,
-            60L,
+            60L, // keepAliveTime
             TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>(),
             new ThreadFactoryBuilder().setDaemon(true).build()) {
