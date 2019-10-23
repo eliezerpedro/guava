@@ -146,23 +146,28 @@ public class JdkFutureAdaptersTest extends TestCase {
     SingleCallListener singleCallListener = new SingleCallListener();
     singleCallListener.expectCall();
 
-    assertFalse(singleCallListener.wasCalled());
-    assertFalse(listenableFuture.isDone());
+    // change assertFalse to assertTrue to cause a fail in the test
+    assertTrue(singleCallListener.wasCalled());
+    assertTrue(listenableFuture.isDone());
 
-    listenableFuture.addListener(singleCallListener, directExecutor());
-    /*
+     /*
      * Don't shut down until the listenInPoolThread task has been accepted to
      * run. We want to see what happens when it's interrupted, not when it's
      * rejected.
      */
+    listenableFuture.addListener(singleCallListener, directExecutor());
+
     submitSuccessful.await();
-    executorService.shutdownNow();
+    executorService.shutdownNow(); // shutdown the service
     abstractFuture.set(DATA1);
     assertEquals(DATA1, listenableFuture.get());
     singleCallListener.waitForCall();
 
-    assertTrue(singleCallListener.wasCalled());
-    assertTrue(listenableFuture.isDone());
+     // change assertTrue to assertFalse to cause a fail in the test.
+    assertFalse(singleCallListener.wasCalled());
+    assertFalse(listenableFuture.isDone());
+    
+
   }
 
   /** A Future that doesn't implement ListenableFuture, useful for testing listenInPoolThread. */
